@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { ID, Query } from "node-appwrite";
-
 import { Appointment } from "@/types/appwrite.types";
 
 import {
@@ -79,6 +78,23 @@ export const getRecentAppointmentList = async () => {
   }
 };
 
+export const getAppointment = async (appointmentId: string) => {
+  try {
+    const appointment = await databases.getDocument(
+      DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      appointmentId
+    );
+
+    return parseStringify(appointment);
+  } catch (error) {
+    console.error(
+      "An error occurred while retrieving the existing patient:",
+      error
+    );
+  }
+};
+
 export const updateAppointment = async ({
   appointmentId,
   userId,
@@ -95,6 +111,19 @@ export const updateAppointment = async ({
 
     if (!updatedAppointment) throw Error;
 
+    const smsMessage = `
+      Hi, it's CarePulse.
+      ${
+        type === "schedule"
+          ? `Your appointment has been scheduled for ${
+              formatDateTime(appointment.schedule!).dateTime
+            } with Dr. ${appointment.primaryPhysician}`
+          : `We regret to inform you that your appointment has been cancelled for the following reason: ${appointment.cancellationReason}`
+      }
+    `;
+
+    await sendSMSNotification(userId, smsMessage);
+
     revalidatePath("/admin");
     return parseStringify(updatedAppointment);
   } catch (error) {
@@ -102,19 +131,17 @@ export const updateAppointment = async ({
   }
 };
 
-export const getAppointment = async (appointmentId: string) => {
+export const sendSMSNotification = async (userId: string, content: string) => {
   try {
-    const appointment = await databases.getDocument(
-      DATABASE_ID!,
-      APPOINTMENT_COLLECTION_ID!,
-      appointmentId
+    const message = await messaging.createSms(
+      ID.unique(),
+      content,
+      [],
+      [userId]
     );
 
-    return parseStringify(appointment);
+    return parseStringify(message);
   } catch (error) {
-    console.error(
-      "An error occurred while retrieving the existing patient:",
-      error
-    );
+    console.log(error);
   }
 };
