@@ -358,7 +358,7 @@ const RegisterForm = ({ user }: { user: User }) => {
           fieldType={FormFieldType.CHECKBOX}
           control={form.control}
           name="privacyConsent"
-          label="I acknowledge all the details provided are correct."
+          label="I agree to privacy policies"
         />
         <SubmitButton isLoading={isLoading}>Submit and Continue</SubmitButton>
       </form>
