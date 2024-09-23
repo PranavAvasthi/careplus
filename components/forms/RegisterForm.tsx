@@ -41,7 +41,7 @@ const RegisterForm = ({ user }: { user: User }) => {
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
-    
+
     let formData;
     if (
       values.identificationDocument &&
@@ -93,7 +93,7 @@ const RegisterForm = ({ user }: { user: User }) => {
     }
 
     setIsLoading(false);
-  }
+  };
 
   return (
     <Form {...form}>
@@ -354,14 +354,12 @@ const RegisterForm = ({ user }: { user: User }) => {
           name="disclosureConsent"
           label="I consent to the use and disclosure of my health information for treatment purpose."
         />
-
         <CustomFormField
           fieldType={FormFieldType.CHECKBOX}
           control={form.control}
           name="privacyConsent"
-          label="I acknowledge that I have reviewed and agree to the privacy policy."
+          label="I acknowledge all the details provided are correct."
         />
-
         <SubmitButton isLoading={isLoading}>Submit and Continue</SubmitButton>
       </form>
     </Form>
